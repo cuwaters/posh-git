@@ -65,6 +65,12 @@ if ($ForcePoshGitPrompt -or !$currentPromptDef -or ($currentPromptDef -eq $defau
         # The latter is more desirable.
         $pathInfo = $ExecutionContext.SessionState.Path.CurrentLocation
         $currentPath = if ($pathInfo.Drive) { $pathInfo.Path } else { $pathInfo.ProviderPath }
+        $normalizedPath = Get-FileSystemCasing($currentPath)
+        
+        if (!$normalizedPath.Equals($currentPath)) {
+					Set-Location $normalizedPath
+					$currentPath = $normalizedPath
+				}
 
         # File system paths are case-sensitive on Linux and case-insensitive on Windows and macOS
         if (($PSVersionTable.PSVersion.Major -ge 6) -and $IsLinux) {
